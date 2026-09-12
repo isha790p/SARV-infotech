@@ -1,176 +1,209 @@
-// Get display
-const display = document.getElementById("display");
+const currentDisplay = document.getElementById("current");
+const previousDisplay = document.getElementById("previous");
 
-// Get buttons
-const numberButtons = document.querySelectorAll(".number");
-const operatorButtons = document.querySelectorAll(".operator");
+let currentValue = "";
+let previousValue = "";
+let operator = null;
 
-const clearButton = document.getElementById("clear");
-const deleteButton = document.getElementById("delete");
-const equalsButton = document.getElementById("equals");
-const decimalButton = document.getElementById("decimal");
+const buttons = document.querySelectorAll("button");
 
+buttons.forEach(button => {
+    button.addEventListener("click", () => {
 
-// Variables
-let firstNumber = "";
-let secondNumber = "";
-let operator = "";
-let shouldResetDisplay = false;
+        const value = button.dataset.value;
+        const action = button.dataset.action;
 
-
-// ----------------------------------
-// NUMBER BUTTONS
-// ----------------------------------
-
-numberButtons.forEach(function(button) {
-
-    button.addEventListener("click", function() {
-
-        // If display needs to be reset
-        if (shouldResetDisplay) {
-            display.value = "0";
-            shouldResetDisplay = false;
+        if (value !== undefined) {
+            handleInput(value);
         }
 
-        // Add number to display
-        if (display.value === "0") {
-            display.value = button.textContent;
-        } 
-        else {
-            display.value += button.textContent;
+        if (action === "clear") {
+            clearCalculator();
         }
 
+        if (action === "delete") {
+            deleteLast();
+        }
+
+        if (action === "calculate") {
+            calculate();
+        }
     });
-
 });
 
 
-// ----------------------------------
-// OPERATOR BUTTONS
-// ----------------------------------
+function handleInput(value) {
 
-operatorButtons.forEach(function(button) {
+    // Number
+    if (!isNaN(value)) {
+        currentValue += value;
+        updateDisplay();
+        return;
+    }
 
-    button.addEventListener("click", function() {
+    // Decimal
+    if (value === ".") {
 
-        firstNumber = display.value;
+        if (!currentValue.includes(".")) {
+            currentValue = currentValue === "" ? "0." : currentValue + ".";
+        }
 
-        operator = button.dataset.value;
+        updateDisplay();
+        return;
+    }
 
-        shouldResetDisplay = true;
+    // Percentage
+    if (value === "%") {
 
-    });
+        if (currentValue !== "") {
+            currentValue = String(parseFloat(currentValue) / 100);
+        }
 
-});
+        updateDisplay();
+        return;
+    }
+
+    // Operator
+    if (["+", "-", "*", "/"].includes(value)) {
+
+        if (currentValue === "" && previousValue === "") {
+            return;
+        }
+
+        if (currentValue !== "" && previousValue !== "") {
+            calculate();
+        }
+
+        operator = value;
+
+        previousValue = currentValue;
+        currentValue = "";
+
+        updateDisplay();
+    }
+}
 
 
-// ----------------------------------
-// EQUAL BUTTON
-// ----------------------------------
+function calculate() {
 
-equalsButton.addEventListener("click", function() {
+    if (previousValue === "" || currentValue === "" || operator === null) {
+        return;
+    }
 
-    secondNumber = display.value;
-
-    let num1 = Number(firstNumber);
-    let num2 = Number(secondNumber);
+    const num1 = parseFloat(previousValue);
+    const num2 = parseFloat(currentValue);
 
     let result;
 
+    switch (operator) {
 
-    // IF-ELSE statements
-    if (operator === "+") {
+        case "+":
+            result = num1 + num2;
+            break;
 
-        result = num1 + num2;
+        case "-":
+            result = num1 - num2;
+            break;
 
-    } 
-    else if (operator === "-") {
+        case "*":
+            result = num1 * num2;
+            break;
 
-        result = num1 - num2;
-
-    } 
-    else if (operator === "*") {
-
-        result = num1 * num2;
-
-    } 
-    else if (operator === "/") {
-
-        // Check division by zero
-        if (num2 === 0) {
-
-            display.value = "Cannot divide by 0";
-            return;
-
-        } 
-        else {
+        case "/":
+            if (num2 === 0) {
+                currentDisplay.textContent = "Error";
+                previousDisplay.textContent = "";
+                resetValues();
+                return;
+            }
 
             result = num1 / num2;
-
-        }
-
-    } 
-    else {
-
-        result = num2;
-
+            break;
     }
 
+    currentValue = String(
+        Math.round((result + Number.EPSILON) * 100000000) / 100000000
+    );
 
-    // Show result
-    display.value = result;
+    previousValue = "";
+    operator = null;
 
-    firstNumber = result;
-    operator = "";
-
-});
-
-
-// ----------------------------------
-// CLEAR BUTTON
-// ----------------------------------
-
-clearButton.addEventListener("click", function() {
-
-    display.value = "0";
-
-    firstNumber = "";
-    secondNumber = "";
-    operator = "";
-
-});
+    updateDisplay();
+}
 
 
-// ----------------------------------
-// DELETE BUTTON
-// ----------------------------------
+function clearCalculator() {
+    currentValue = "";
+    previousValue = "";
+    operator = null;
 
-deleteButton.addEventListener("click", function() {
+    updateDisplay();
+}
 
-    if (display.value.length > 1) {
 
-        display.value = display.value.slice(0, -1);
+function deleteLast() {
+    currentValue = currentValue.slice(0, -1);
 
-    } 
-    else {
+    updateDisplay();
+}
 
-        display.value = "0";
 
+function resetValues() {
+    currentValue = "";
+    previousValue = "";
+    operator = null;
+}
+
+
+function updateDisplay() {
+
+    currentDisplay.textContent =
+        currentValue === "" ? "0" : currentValue;
+
+    if (previousValue !== "" && operator !== null) {
+
+        const symbol = {
+            "+": "+",
+            "-": "−",
+            "*": "×",
+            "/": "÷"
+        };
+
+        previousDisplay.textContent =
+            `${previousValue} ${symbol[operator]}`;
+    } else {
+        previousDisplay.textContent = "";
+    }
+}
+
+
+/* Keyboard support */
+
+document.addEventListener("keydown", event => {
+
+    const key = event.key;
+
+    if (!isNaN(key) || key === ".") {
+        handleInput(key);
     }
 
-});
-
-
-// ----------------------------------
-// DECIMAL BUTTON
-// ----------------------------------
-
-decimalButton.addEventListener("click", function() {
-
-    if (!display.value.includes(".")) {
-
-        display.value += ".";
-
+    if (["+", "-", "*", "/"].includes(key)) {
+        handleInput(key);
     }
 
+    if (key === "Enter" || key === "=") {
+        calculate();
+    }
+
+    if (key === "Backspace") {
+        deleteLast();
+    }
+
+    if (key === "Escape") {
+        clearCalculator();
+    }
+
+    if (key === "%") {
+        handleInput("%");
+    }
 });
