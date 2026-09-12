@@ -1,0 +1,109 @@
+/* Page Design */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+
+/* Calculator Box */
+.calculator {
+    width: 320px;
+    padding: 20px;
+
+    background: white;
+    border-radius: 15px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Display Screen */
+#display {
+    width: 100%;
+    height: 65px;
+
+    box-sizing: border-box;
+
+    margin-bottom: 15px;
+    padding: 10px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #eeeeee;
+
+    font-size: 28px;
+    text-align: right;
+}
+
+/* CSS GRID */
+.buttons {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 10px;
+}
+
+/* All Buttons */
+button {
+    height: 60px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+/* Button Hover */
+button:hover {
+    opacity: 0.8;
+}
+
+/* Operator Buttons */
+.operator {
+    background: #ff9500;
+    color: white;
+}
+
+/* Equal Button */
+#equals {
+    background: #28a745;
+    color: white;
+}
+
+/* Clear Button */
+.clear {
+    background: #dc3545;
+    color: white;
+}
+
+/* Delete Button */
+#delete {
+    background: #777;
+    color: white;
+}
+
+/* Zero Button */
+.zero {
+    grid-column: span 2;
+}
+
+/* Decimal Button */
+#decimal {
+    background: #ddd;
+}
