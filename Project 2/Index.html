@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albert Einstein — A Tribute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board: #182720;
+    --board-deep: #101c17;
+    --chalk: #eee7d3;
+    --chalk-dim: #9fac9e;
+    --brass: #c9a15a;
+    --paper: #f1e9d6;
+    --paper-shadow: #ded2b3;
+    --ink: #2a2318;
+    --ink-soft: #55503f;
+    --blue: #7fa0bd;
+    --rule: rgba(238,231,211,0.18);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--board);
+    color: var(--chalk);
+    font-family: 'Source Serif 4', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  a, button{ font-family: inherit; }
+
+  .chalk-font{
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* subtle chalkboard grain via layered gradients */
+  .board-texture{
+    background-image:
+      radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.035), transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.03), transparent 60%),
+      radial-gradient(ellipse at 60% 15%, rgba(255,255,255,0.02), transparent 50%),
+      linear-gradient(180deg, var(--board), var(--board-deep));
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-scribble{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .hero-frame{
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eq{
+    font-size: clamp(3.5rem, 14vw, 9rem);
+    color: var(--chalk);
+    text-shadow: 0 0 18px rgba(238,231,211,0.25), 2px 2px 0 rgba(0,0,0,0.25);
+    letter-spacing: 0.01em;
+    transform: rotate(-1.5deg);
+  }
+
+  .hero-name{
+    margin: 1.2rem 0 0.4rem;
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--brass);
+  }
+
+  .hero-dates{
+    font-family: 'Caveat', cursive;
+    font-size: 1.7rem;
+    color: var(--chalk-dim);
+    margin-bottom: 2.2rem;
+  }
+
+  .hero-line{
+    width: 64px;
+    height: 2px;
+    background: var(--rule);
+    margin: 0 auto 2.2rem;
+  }
+
+  .hero-quote{
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: var(--chalk-dim);
+    max-width: 34ch;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .scroll-hint{
+    position: absolute;
+    bottom: 2.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Caveat', cursive;
+    font-size: 1.2rem;
+    color: var(--chalk-dim);
+    z-index: 2;
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ position: relative; }
+
+  .wrap{
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 5.5rem 1.5rem;
+  }
+
+  /* ---------- BIO (paper) ---------- */
+  .paper{
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .bio-grid{
+    display: grid;
+    grid-template-columns: 1.4fr 0.9fr;
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .bio-grid h2{
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    font-weight: 600;
+    margin: 0 0 1.3rem;
+    max-width: 14ch;
+  }
+
+  .bio-grid p{
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 1.2rem;
+  }
+
+  .stat-card{
+    border: 1px solid var(--paper-shadow);
+    padding: 1.8rem 1.6rem;
+    background: rgba(255,255,255,0.35);
+  }
+
+  .stat-card .num{
+    font-family: 'Caveat', cursive;
+    font-size: 3.2rem;
+    color: #8a6a2c;
+    line-height: 1;
+    display: block;
+  }
+
+  .stat-card .label{
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin-top: 0.4rem;
+    display: block;
+  }
+
+  .stat-card + .stat-card{ margin-top: 1.2rem; }
+
+  /* ---------- TIMELINE (board) ---------- */
+  .timeline-section .wrap{ padding-top: 6rem; padding-bottom: 6rem; }
+
+  .timeline-heading{
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+
+  .timeline-heading .chalk-font{
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    color: var(--chalk);
+  }
+
+  .timeline{
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .timeline::before{
+    content: "";
+    position: absolute;
+    left: 92px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--rule);
+  }
+
+  .tl-item{
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 2rem;
+    padding: 1.5rem 0;
+  }
+
+  .tl-year{
+    font-family: 'Caveat', cursive;
+    font-size: 1.9rem;
+    color: var(--brass);
+    text-align: right;
+    padding-right: 1.4rem;
+    position: relative;
+  }
+
+  .tl-year::after{
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 10px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--brass);
+    box-shadow: 0 0 0 4px var(--board);
+  }
+
+  .tl-item h3{
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--chalk);
+  }
+
+  .tl-item p{
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--chalk-dim);
+    max-width: 52ch;
+  }
+
+  /* ---------- QUOTES ---------- */
+  .quotes-section{
+    background: var(--board-deep);
+  }
+
+  .quotes-heading{
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .quotes-heading .eyebrow{
+    color: var(--blue);
+    font-size: 1rem;
+    font-style: italic;
+  }
+
+  .quote-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .quote-card{
+    background: rgba(238,231,211,0.04);
+    border: 1px solid var(--rule);
+    padding: 2rem 1.7rem;
+    position: relative;
+  }
+
+  .quote-card:nth-child(1){ transform: rotate(-0.6deg); }
+  .quote-card:nth-child(2){ transform: rotate(0.4deg); margin-top: 1.6rem; }
+  .quote-card:nth-child(3){ transform: rotate(-0.3deg); }
+
+  .quote-card p{
+    font-family: 'Caveat', cursive;
+    font-size: 1.55rem;
+    line-height: 1.35;
+    color: var(--chalk);
+    margin: 0 0 1rem;
+  }
+
+  .quote-card span{
+    font-size: 0.85rem;
+    color: var(--chalk-dim);
+    letter-spacing: 0.03em;
+  }
+
+  /* ---------- CLOSING ---------- */
+  .closing{
+    text-align: center;
+    padding: 7rem 1.5rem 6rem;
+  }
+
+  .closing-quote{
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    max-width: 18ch;
+    margin: 0 auto 1rem;
+    color: var(--chalk);
+    line-height: 1.25;
+  }
+
+  .closing-sig{
+    color: var(--chalk-dim);
+    font-size: 0.95rem;
+  }
+
+  footer{
+    text-align: center;
+    padding: 2.2rem 1.5rem;
+    color: var(--chalk-dim);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 800px){
+    .bio-grid{ grid-template-columns: 1fr; gap: 2.2rem; }
+    .quote-grid{ grid-template-columns: 1fr; }
+    .quote-card:nth-child(2){ margin-top: 0; }
+    .timeline::before{ left: 62px; }
+    .tl-item{ grid-template-columns: 62px 1fr; gap: 1.2rem; }
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="hero board-texture">
+    <svg class="hero-scribble" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M120 90 C 160 40, 220 130, 190 70 S 260 20, 240 80" stroke="var(--chalk-dim)" stroke-width="2" fill="none" opacity="0.5"/>
+      <path d="M980 640 C 1020 600, 1060 680, 1040 630 S 1100 590, 1090 650" stroke="var(--chalk-dim)" stroke-width="2" fill="none" opacity="0.5"/>
+      <path d="M60 700 Q 90 660 120 700 T 180 700" stroke="var(--blue)" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <path d="M1050 120 Q 1080 90 1100 120 T 1150 110" stroke="var(--brass)" stroke-width="1.5" fill="none" opacity="0.4"/>
+    </svg>
+    <div class="hero-frame">
+      <div class="hero-eq chalk-font">E = mc²</div>
+      <div class="hero-name">ALBERT EINSTEIN</div>
+      <div class="hero-dates">1879 – 1955</div>
+      <div class="hero-line"></div>
+      <p class="hero-quote">"The most beautiful thing we can experience is the mysterious. It is the source of all true art and science."</p>
+    </div>
+    <div class="scroll-hint">↓ keep reading</div>
+  </header>
+
+  <section class="paper">
+    <div class="wrap bio-grid">
+      <div>
+        <h2>A patent clerk who rewrote the universe</h2>
+        <p>Einstein spent his days at the Swiss Patent Office in Bern, evaluating other people's inventions. He spent his evenings rethinking the nature of space, time, and light — with no laboratory, no university post, and no one watching.</p>
+        <p>What he produced from that quiet desk didn't just add to physics. It replaced the Newtonian picture of the universe that had stood for two centuries, and gave the twentieth century its new common sense: that time bends, that mass and energy are the same currency, and that the speed of light is the one constant everyone can agree on.</p>
+        <p>He would go on to hold posts in Zurich, Prague, Berlin, and finally Princeton — but the habit of mind never changed. He trusted a thought experiment as much as an equation, and treated curiosity as a discipline rather than a gift.</p>
+      </div>
+      <div>
+        <div class="stat-card">
+          <span class="num">4</span>
+          <span class="label">papers published in 1905 alone, each one reshaping a different field of physics</span>
+        </div>
+        <div class="stat-card">
+          <span class="num">1921</span>
+          <span class="label">Nobel Prize in Physics, awarded for the photoelectric effect — not relativity</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="timeline-section board-texture">
+    <div class="wrap">
+      <div class="timeline-heading">
+        <div class="chalk-font">A life in motion</div>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1879</div>
+          <div>
+            <h3>Born in Ulm, Germany</h3>
+            <p>A slow talker as a child, by his own account — the kind of person more interested in why the compass needle pointed north than in what other children were doing.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1905</div>
+          <div>
+            <h3>The miracle year</h3>
+            <p>While working full-time as a patent examiner, he published four papers that introduced special relativity, mass–energy equivalence, and the photoelectric effect, and confirmed the existence of atoms.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1915</div>
+          <div>
+            <h3>General relativity</h3>
+            <p>A decade of near-obsessive work produced a new theory of gravity — not a force, but a curve in the fabric of space and time itself.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1919</div>
+          <div>
+            <h3>Confirmed by an eclipse</h3>
+            <p>Starlight bending around the sun, observed during a solar eclipse, matched his prediction exactly. Overnight, he became the most famous scientist alive.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1933</div>
+          <div>
+            <h3>Leaves Germany for good</h3>
+            <p>With the Nazi rise to power, he renounced his German citizenship and settled permanently at the Institute for Advanced Study in Princeton.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1955</div>
+          <div>
+            <h3>Dies in Princeton</h3>
+            <p>He left behind an unfinished search for a unified theory — and a way of looking at the world that outlived the equations themselves.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quotes-section">
+    <div class="wrap">
+      <div class="quotes-heading">
+        <p class="eyebrow">In his own words</p>
+      </div>
+      <div class="quote-grid">
+        <div class="quote-card">
+          <p>"Imagination is more important than knowledge."</p>
+          <span>on discovery</span>
+        </div>
+        <div class="quote-card">
+          <p>"Life is like riding a bicycle. To keep your balance, you must keep moving."</p>
+          <span>in a letter to his son, 1930</span>
+        </div>
+        <div class="quote-card">
+          <p>"The important thing is not to stop questioning."</p>
+          <span>on curiosity</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing board-texture">
+    <div class="closing-quote chalk-font">"Try not to become a person of success, but rather try to become a person of value."</div>
+    <div class="closing-sig">— Albert Einstein</div>
+  </section>
+
+  <footer>
+    A small tribute to a mind that changed how we see time, light, and gravity.
+  </footer>
+
+</body>
+</html>
